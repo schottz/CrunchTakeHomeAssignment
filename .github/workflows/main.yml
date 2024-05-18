@@ -27,7 +27,8 @@ jobs:
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
 
   test:
-    runs-on: ubunbu-latest
+    runs-on: ubuntu-latest
+    needs: build
 
     steps:
       - name: Run Tests
@@ -39,7 +40,8 @@ jobs:
           docker run --rm $REGISTRY/$REPOSITORY:$IMAGE_TAG npm test
 
   push:
-    runs-on: ubunbu-latest
+    runs-on: ubuntu-latest
+    needs: test
 
     steps:
       - name: Configure AWS Credentials
@@ -66,7 +68,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    needs: push
 
     steps:
       - name: Checkout Code
