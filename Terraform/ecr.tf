@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "take_home_repo" {
-  name = "take_home_nodes"
+  name = "take_home_nodeapp"
 
   image_scanning_configuration {
     scan_on_push = true
