@@ -43,11 +43,11 @@ resource "aws_ecs_task_definition" "my_task" {
         },
         {
           name  = "POSTGRES_USER"
-          valueFrom = "${aws_secretsmanager_secret.db_secret.arn}:username"
+          valueFrom = "${aws_secretsmanager_secret.db_secret.arn}:username::"
         },
         {
           name  = "POSTGRES_PASSWORD"
-          valueFrom = "${aws_secretsmanager_secret.db_secret.arn}:password"
+          valueFrom = "${aws_secretsmanager_secret.db_secret.arn}:password::"
         }
       ],
     environment = [
