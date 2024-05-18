@@ -10,7 +10,7 @@ resource "aws_lb" "my_loadbalancer" {
 
 resource "aws_lb_target_group" "my_target_group" {
   name            = "take-home-ecs-tg"
-  port            = 80
+  port            = var.applicatio_port
   protocol        = "HTTP"
   target_type     = "ip"
   vpc_id          = aws_vpc.my_vpc.id

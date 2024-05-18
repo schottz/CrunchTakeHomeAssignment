@@ -24,8 +24,8 @@ resource "aws_ecs_task_definition" "my_task" {
       image = "${aws_ecr_repository.take_home_repo.repository_url}:latest",
       portMappings = [
         {
-          containerPort = 80,
-          hostPort      = 80,
+          containerPort = var.applicatio_port,
+          hostPort      = var.applicatio_port,
         },
       ],
       logConfiguration = {
@@ -84,7 +84,7 @@ resource "aws_ecs_service" "my_service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.my_target_group.arn
     container_name   = "take-home-container"
-    container_port   = 80
+    container_port   = var.applicatio_port
   }
 
   depends_on = [aws_ecs_task_definition.my_task]

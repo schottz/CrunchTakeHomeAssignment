@@ -34,3 +34,7 @@ variable db_port {
 variable db_instance_name {
     default = "boilerplate"
 }
+
+variable applicatio_port {
+    default = "4000"
+}
