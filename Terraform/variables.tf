@@ -36,5 +36,5 @@ variable db_instance_name {
 }
 
 variable applicatio_port {
-    default = "4000"
+    default = 4000
 }
