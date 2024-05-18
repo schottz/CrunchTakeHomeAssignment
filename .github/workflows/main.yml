@@ -75,8 +75,8 @@ jobs:
       - name: Get Current Task Definition
         id: task-def
         run: |
-            TASK_DEFINITION_ARN=$(aws ecs describe-services --cluster ${{ secrets.ECS_CLUSTER_NAME }} --services ${{ secrets.ECS_SERVICE_NAME }} --query "services[0].taskDefinition" --output text)
-            aws ecs describe-task-definition --task-definition $TASK_DEFINITION_ARN > current-task-def.json
+          TASK_DEFINITION_ARN=$(aws ecs describe-services --cluster ${{ secrets.ECS_CLUSTER_NAME }} --services ${{ secrets.ECS_SERVICE_NAME }} --query "services[0].taskDefinition" --output text)
+          aws ecs describe-task-definition --task-definition $TASK_DEFINITION_ARN > current-task-def.json
     
       - name: Update Task Definition with New Image
         id: update-task-def
@@ -97,19 +97,3 @@ jobs:
             AWS_REGION: ${{ secrets.AWS_REGION }}
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      
-      - name: Register New Task Definition
-        run: |
-            FAMILY=$(aws ecs describe-services --cluster ${{ secrets.ECS_CLUSTER_NAME }} --services ${{ secrets.ECS_SERVICE_NAME }} --query "services[0].taskDefinition" --output text | awk -F'/' '{print $2}' | awk -F':' '{print $1}')
-            CONTAINER_NAME=$(aws ecs describe-task-definition --task-definition $FAMILY --query "taskDefinition.containerDefinitions[0].name" --output text)
-            NEW_IMAGE="${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}"
-            sed -e "s|<IMAGE>|$NEW_IMAGE|g" -e "s|<CONTAINER_NAME>|$CONTAINER_NAME|g" task-definition.json > new-task-def.json
-            aws ecs register-task-definition --cli-input-json file://new-task-def.json
-        env:
-            AWS_REGION: ${{ secrets.AWS_REGION }}
-            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      - name: Update ECS Service
-        run: |
-          aws ecs update-service --cluster ${{ secrets.ECS_CLUSTER_NAME }} --service ${{ secrets.ECS_SERVICE_NAME }} --force-new-deployment
