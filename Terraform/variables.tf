@@ -26,3 +26,11 @@ variable private_subnet_cidr_blocks {
 variable region {
   default = "sa-east-1"
 }
+
+variable db_port {
+    default = "5432"
+}
+
+variable db_instance_name {
+    default = "boilerplate"
+}

@@ -38,22 +38,26 @@ resource "aws_ecs_task_definition" "my_task" {
     },
     secrets = [
         {
-          name  = "DB_HOST"
+          name  = "PG_HOST"
           valueFrom = aws_ssm_parameter.db_endpoint.name
         },
         {
-          name  = "DB_USERNAME"
+          name  = "POSTGRES_USER"
           valueFrom = "${aws_secretsmanager_secret.db_secret.arn}:username"
         },
         {
-          name  = "DB_PASSWORD"
+          name  = "POSTGRES_PASSWORD"
           valueFrom = "${aws_secretsmanager_secret.db_secret.arn}:password"
         }
       ],
     environment = [
         {
-          name  = "AWS_DEFAULT_REGION"
-          value = var.region
+            name = "PG_PORT"
+            value = var.db_port
+        },
+        {
+            name = "POSTGRES_DB"
+            value = var.db_instance_name
         }
       ]
     },
