@@ -6,8 +6,36 @@ on:
       - main
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Dockerfile Lint
+        uses: replicatedhq/dockerfilelint-action@v1
+        with:
+          file: typeorm-app/Dockerfile
+    
+  scan:
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+    
+      - name: Docker Image Scan
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        run: |
+          docker scan $REGISTRY/$REPOSITORY:$IMAGE_TAG
   build:
     runs-on: ubuntu-latest
+    needs: scan
 
     steps:
       - name: Checkout Code
@@ -32,7 +60,8 @@ jobs:
           REGISTRY: ${{ secrets.ECR_REGISTRY }}
           REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
-          docker run --rm $REGISTRY/$REPOSITORY:$IMAGE_TAG npm test
+          docker run --rm $REGISTRY/$REPOSITORY:$IMAGE_TAG npm -v
+          docker run --rm $REGISTRY/$REPOSITORY:$IMAGE_TAG node -v
 
   push:
     runs-on: ubuntu-latest
