@@ -19,7 +19,7 @@ jobs:
       - name: Build Docker Image
         id: build-image
         env:
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: latest
           REGISTRY: ${{ secrets.ECR_REGISTRY }}
           REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
@@ -28,7 +28,7 @@ jobs:
       
       - name: Run Tests
         env:
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: latest
           REGISTRY: ${{ secrets.ECR_REGISTRY }}
           REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
@@ -49,7 +49,7 @@ jobs:
       - name: Push Docker Image
         if: success()
         run: |
-            IMAGE_TAG=${{ github.sha }}
+            IMAGE_TAG=latest
             REPOSITORY_URI=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}
             docker push $REPOSITORY_URI:$IMAGE_TAG
         env:
@@ -71,29 +71,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-      
-      - name: Get Current Task Definition
-        id: task-def
-        run: |
-          TASK_DEFINITION_ARN=$(aws ecs describe-services --cluster ${{ secrets.ECS_CLUSTER_NAME }} --services ${{ secrets.ECS_SERVICE_NAME }} --query "services[0].taskDefinition" --output text)
-          aws ecs describe-task-definition --task-definition $TASK_DEFINITION_ARN > current-task-def.json
-    
-      - name: Update Task Definition with New Image
-        id: update-task-def
-        run: |
-            NEW_IMAGE="${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}"
-            jq --arg IMAGE "$NEW_IMAGE" '.taskDefinition.containerDefinitions[0].image = $IMAGE' current-task-def.json > new-task-def.json
-            jq 'del(.taskDefinition.revision, .taskDefinition.status, .taskDefinition.requiresAttributes, .taskDefinition.compatibilities, .taskDefinition.registeredAt, .taskDefinition.registeredBy)' new-task-def.json > clean-task-def.json
-    
-      - name: Register New Task Definition
-        run: |
-            aws ecs register-task-definition --cli-input-json file://clean-task-def.json
-    
+
       - name: Update ECS Service
         run: |
-            NEW_TASK_DEFINITION_ARN=$(aws ecs describe-task-definition --task-definition ${{ secrets.ECS_SERVICE_NAME }} --query "taskDefinition.taskDefinitionArn" --output text)
-            aws ecs update-service --cluster ${{ secrets.ECS_CLUSTER_NAME }} --service ${{ secrets.ECS_SERVICE_NAME }} --task-definition $NEW_TASK_DEFINITION_ARN --force-new-deployment
-        env:
-            AWS_REGION: ${{ secrets.AWS_REGION }}
-            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws ecs update-service --cluster ${{ secrets.ECS_CLUSTER_NAME }} --service ${{ secrets.ECS_SERVICE_NAME }} --force-new-deployment
