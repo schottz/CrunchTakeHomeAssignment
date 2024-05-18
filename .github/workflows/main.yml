@@ -34,7 +34,7 @@ jobs:
         run: |
           docker run --rm $REGISTRY/$REPOSITORY:$IMAGE_TAG npm -v
           docker run --rm $REGISTRY/$REPOSITORY:$IMAGE_TAG node -v
-          docker scout cves $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker scan $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
   push:
     runs-on: ubuntu-latest
