@@ -42,7 +42,7 @@ resource "aws_ssm_parameter" "db_endpoint" {
 }
 
 resource "aws_secretsmanager_secret" "db_secret" {
-  name = "aurora_auth_info"
+  name = "aurora_authbxsbsxbah_info"
 
   tags = {
     Name = "AuroraAuthInfo"
@@ -143,4 +143,17 @@ resource "aws_iam_policy" "secretsmanager_invoke_lambda_policy" {
 resource "aws_iam_role_policy_attachment" "secretsmanager_invoke_lambda_attachment" {
   role       = aws_iam_role.secretsmanager_invoke_lambda_role.name
   policy_arn = aws_iam_policy.secretsmanager_invoke_lambda_policy.arn
+}
+
+
+#############################################################
+#               VPC ENDPOINT
+#############################################################
+
+resource "aws_vpc_endpoint" "secretsmanager_endpoint" {
+  vpc_endpoint_type = "Interface"
+  vpc_id            = aws_vpc.my_vpc.id
+  service_name      = "com.amazonaws.${var.region}.secretsmanager"
+  subnet_ids = [ for subnet in aws_subnet.private_subnets: subnet.id]
+  security_group_ids = [aws_security_group.private_sg.id]
 }
