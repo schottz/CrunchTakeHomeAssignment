@@ -132,3 +132,8 @@ resource "aws_iam_role_policy_attachment" "sns_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSIoTDeviceDefenderPublishFindingsToSNSMitigationAction"
   role       = aws_iam_role.ecs_task_execution_role.name
 }
+
+resource "aws_iam_role_policy_attachment" "secretsmanager_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+  role       = aws_iam_role.ecs_task_execution_role.name
+}
