@@ -20,7 +20,7 @@ jobs:
         id: build-image
         env:
           IMAGE_TAG: ${{ github.sha }}
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REGISTRY: ${{ secrets.ECR_REGISTRY }}
           REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
           cd typeorm-app
@@ -33,7 +33,7 @@ jobs:
       - name: Run Tests
         env:
           IMAGE_TAG: ${{ github.sha }}
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REGISTRY: ${{ secrets.ECR_REGISTRY }}
           REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
           docker run --rm $REGISTRY/$REPOSITORY:$IMAGE_TAG npm test
@@ -56,7 +56,7 @@ jobs:
       - name: Push Docker Image
         if: success()
         run: |
-          IMAGE_TAG=latest
+          IMAGE_TAG=${{ github.sha }}
           REPOSITORY_URI=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}
           docker push $REPOSITORY_URI:$IMAGE_TAG
         env:
