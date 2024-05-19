@@ -7,7 +7,7 @@ The architecture goes beyond the assignment's scope and takes advantage of the a
 
 For that purpose, excepting the Load Balancer, all resources were kept inside private subnets, taking advantage of AWS VPC Endpoint service to avoid internet access on the interactions between AWS services.
 
-```terraform
+```
 resource "aws_vpc_endpoint" "ecr_endpoint" {
   vpc_endpoint_type = "Interface"
   vpc_id = aws_vpc.my_vpc.id
@@ -15,11 +15,12 @@ resource "aws_vpc_endpoint" "ecr_endpoint" {
   private_dns_enabled = true
   subnet_ids = [ for subnet in aws_subnet.private_subnets: subnet.id]
   security_group_ids = [aws_security_group.private_sg.id]
-} ```
+}
+```
 
 The database credentials are stored in the AWS Secrets Manager service and have a Lambda function aimed to rotate de credencials in a 30 day basis.
 
-```terraform
+```
 resource "aws_secretsmanager_secret" "db_secret" {
   name = "aurora_authbxsxbah_info"
 
@@ -43,11 +44,12 @@ resource "aws_secretsmanager_secret_rotation" "rotation_policy" {
   rotation_rules {
     automatically_after_days = 30
   }
-}```
+}
+```
 
 To avoid any attack coming from inside the container, a npm user was set up and is being used to run the application
 
-```docker
+```
 RUN mkdir -p /app/log /home/npm && \ 
     chown -R npm:npm /app /home/npm && \
     touch /app/log/access.log && \
@@ -58,7 +60,7 @@ USER npm
 
 The application logs are being sent to a CloudWatch log group
 
-```terraform
+```
 resource "aws_cloudwatch_log_group" "ecs_container_logs" {
   name = "/ecs/take-home-container-logs"
 }
