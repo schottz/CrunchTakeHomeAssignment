@@ -4,7 +4,7 @@ resource "aws_rds_cluster" "aurora_cluster" {
   engine_version          = "11.9" 
   master_username         = jsondecode(aws_secretsmanager_secret_version.db_secret_version.secret_string).username
   master_password         = jsondecode(aws_secretsmanager_secret_version.db_secret_version.secret_string).password
-  database_name           = "takehome"
+  database_name           = var.db_instance_name
   db_subnet_group_name    = aws_db_subnet_group.db_subnet_group.name
   vpc_security_group_ids  = [aws_security_group.private_sg.id]
   skip_final_snapshot     = true
