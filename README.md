@@ -2,6 +2,9 @@
 
 ![](https://github.com/schottz/CrunchTakeHomeAssignment/blob/main/architecture.dot.png)
 
+
+(Chart generated automatically by Terravision.)
+
 # Project Overview
 The architecture goes beyond the assignment's scope and takes advantage of the attack surface reduction practice, that avoids as much as possible exposing services directly to the internet.
 
