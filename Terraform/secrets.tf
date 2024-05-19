@@ -26,15 +26,6 @@ resource "aws_lambda_function" "secret_rotation_lambda" {
   }
 }
 
-resource "aws_vpc_endpoint" "ssm" {
-  vpc_endpoint_type = "Interface"
-  vpc_id = aws_vpc.my_vpc.id
-  service_name = "com.amazonaws.${var.region}.ssm"
-  private_dns_enabled = true
-  subnet_ids = [ for subnet in aws_subnet.private_subnets: subnet.id]
-  security_group_ids = [aws_security_group.private_sg.id]
-}
-
 resource "aws_ssm_parameter" "db_endpoint" {
   name        = "/crunch/db/endpoint"
   type        = "SecureString"
@@ -42,7 +33,7 @@ resource "aws_ssm_parameter" "db_endpoint" {
 }
 
 resource "aws_secretsmanager_secret" "db_secret" {
-  name = "aurora_authbxsbsxbah_info"
+  name = "aurora_authbxsxbah_info"
 
   tags = {
     Name = "AuroraAuthInfo"
@@ -150,10 +141,11 @@ resource "aws_iam_role_policy_attachment" "secretsmanager_invoke_lambda_attachme
 #               VPC ENDPOINT
 #############################################################
 
-resource "aws_vpc_endpoint" "secretsmanager_endpoint" {
+resource "aws_vpc_endpoint" "secretsmanager" {
   vpc_endpoint_type = "Interface"
-  vpc_id            = aws_vpc.my_vpc.id
-  service_name      = "com.amazonaws.${var.region}.secretsmanager"
+  vpc_id = aws_vpc.my_vpc.id
+  service_name = "com.amazonaws.${var.region}.secretsmanager"
+  private_dns_enabled = true
   subnet_ids = [ for subnet in aws_subnet.private_subnets: subnet.id]
   security_group_ids = [aws_security_group.private_sg.id]
 }
