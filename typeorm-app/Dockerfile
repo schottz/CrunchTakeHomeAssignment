@@ -14,10 +14,12 @@ COPY ./package.json .
 
 COPY ./package-lock.json .
 
+COPY scripts scripts
+
 RUN mkdir -p /app/log /home/npm && \ 
     chown -R npm:npm /app /home/npm && \
     touch /app/log/access.log && \
-    chmod o+rwx /app/log/access.log
+    chmod o+rwx /app/log/access.log 
     
 USER npm 
 
@@ -29,4 +31,4 @@ RUN npm run build
 
 EXPOSE 4000
 
-CMD [ "npm", "start" ]
+CMD ./scripts/be-node-dev.sh
