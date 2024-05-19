@@ -2,8 +2,6 @@
 
 ![](https://github.com/schottz/CrunchTakeHomeAssignment/blob/main/architecture.dot.png)
 
-[TOC]
-
 # Project Overview
 The architecture goes beyond the assignment's scope and takes advantage of the attack surface reduction practice, that avoids as much as possible exposing services directly to the internet.
 
