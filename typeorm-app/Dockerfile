@@ -14,8 +14,6 @@ COPY ./package.json .
 
 COPY ./package-lock.json .
 
-COPY scripts scripts
-
 RUN mkdir -p /app/log /home/npm && \ 
     chown -R npm:npm /app /home/npm && \
     touch /app/log/access.log && \
@@ -26,6 +24,8 @@ USER npm
 RUN npm install && npm cache clean --force
 
 COPY . .
+
+USER npm
 
 RUN npm run build
 
